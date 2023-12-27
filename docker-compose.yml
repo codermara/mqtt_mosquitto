@@ -1,0 +1,63 @@
+version: "3.7"
+services:
+# mqtt5 eclipse-mosquitto
+  mqtt1:
+    image: eclipse-mosquitto
+    build: ./Dockerfile
+    container_name: mqtt1
+    ports:
+      - "1883:1883" #default mqtt port
+      - "9001:9001" #default mqtt port for websockets
+    volumes:
+      - ./srvc1/config:/mosquitto/config:rw
+      - ./srvc1/data:/mosquitto/data:rw
+      - ./srvc1/log:/mosquitto/log:rw
+      - ./srvc1/code:/var/www/ #Домашняя директория
+    networks:
+      default:
+        ipv4_address: 172.16.1.5
+
+# mqtt5 eclipse-mosquitto
+  mqtt2:
+    image: eclipse-mosquitto
+    build: ./Dockerfile
+    container_name: mqtt2
+    ports:
+      - "1884:1884" #default mqtt port
+      - "9002:9002" #default mqtt port for websockets
+    volumes:
+      - ./srvc2/config:/mosquitto/config:rw
+      - ./srvc2/data:/mosquitto/data:rw
+      - ./srvc2/log:/mosquitto/log:rw
+      - ./srvc2/code:/var/www/ #Домашняя директория
+    networks:
+      default:
+        ipv4_address: 172.16.1.6
+
+  db:
+    image: postgres:latest
+    container_name: db
+    hostname: db
+    ports:
+      - "9003:9003"
+    volumes:
+      - /db:/var/www/ #Домашняя директория
+    environment:
+        # А так задаются переменные окружения
+      POSTGRES_PASSWORD: password
+    networks:
+      default:
+        ipv4_address: 172.16.1.7
+
+# volumes for mapping data,config and log fo mqtt
+volumes:
+  config:
+  data:
+  log:
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.1.0/24

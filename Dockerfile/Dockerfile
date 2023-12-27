@@ -1,0 +1,1 @@
+RUN apk add g++ mosquitto mosquitto-clients mosquitto-dev
